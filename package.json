@@ -1,0 +1,33 @@
+{
+  "name": "casinodicegame",
+  "version": "0.0.1",
+  "main": "./casinodicegame/static/game.js",
+  "dependencies": {
+    "jsx-loader": "^0.13.2",
+    "node-libs-browser": "^0.5.2",
+    "react": "^0.12.2",
+    "react-magic-move": "^0.1.0",
+    "socket.io-client": "^0.9.16",
+    "webpack": "^1.10.0"
+  },
+  "devDependencies": {
+    "browserify": "^6.2.0",
+    "envify": "^3.0.0",
+    "reactify": "^0.17.1",
+    "uglify-js": "~2.4.15",
+    "watchify": "^2.1.1"
+  },
+  "scripts": {
+    "start": "watchify -o casinodicegame/static/bundle.js -v -d casinodicegame/js/game.js",
+    "build": "browserify casinodicegame/static/game.js -t [reactify --es6] -t browserify-shim -t envify --detect-globals false | uglifyjs -cm > casinodicegame/static/bundle.min.js"
+  },
+  "browserify": {
+    "transform": [
+      "reactify",
+      "envify"
+    ]
+  },
+  "browserify-shim": {
+    "react": "global:React"
+  }
+}

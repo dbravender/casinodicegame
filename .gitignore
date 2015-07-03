@@ -1,0 +1,6 @@
+/.coverage
+/coverage
+/nosetests.json
+/node_modules
+/.env
+*.pyc

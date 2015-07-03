@@ -1,0 +1,122 @@
+.casino {
+  width: 32%;
+  display: inline-block;
+  height: 40%;
+  vertical-align: text-top;
+}
+
+.die {
+  border: 1px solid black;
+  border-radius: 5px;
+  color: white;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  box-shadow: 3px 3px 3px grey;
+}
+
+.winner-undefined {
+  border: 5px solid transparent;
+}
+
+.winner-black {
+  border: 5px solid black;
+}
+
+.winner-green {
+  border: 5px solid #0e7744;
+}
+
+.winner-blue {
+  border: 5px solid #104990;
+}
+
+.winner-red {
+  border: 5px solid #af1306;
+}
+
+.winner-white {
+  border: 5px solid white;
+}
+
+.black {
+  background-color: #000000;
+}
+
+.green {
+  background-color: #0e7744;
+}
+
+.blue {
+  background-color: #104990;
+}
+
+.red {
+  background-color: #af1306;
+}
+
+.white {
+  background-color: white;
+  color: black;
+}
+
+.to-play {
+  height: 3em;
+}
+
+.to-play button {
+  width: 100%;
+  height: 3em;
+  font-size: 100%;
+  text-align: left;
+  vertical-align: top;
+  margin-bottom: 1em;
+}
+
+.bill {
+  display: inline-block;
+  color: black;
+  font-family: arial;
+  margin-right: .25em;
+  margin-bottom: .25em;
+  background-color: #0c9a45;
+  padding-right: .25em;
+  padding-left: .25em;
+  box-shadow: 1px 1px 1px grey;
+}
+
+.bill-10 {
+  background-color: #77dd77;
+}
+
+.bill-20 {
+  background-color: #b39eb5;
+}
+
+.bill-30 {
+  background-color: #ff6961;
+}
+
+.bill-40 {
+  background-color: #966fd6;
+}
+
+.bill-50 {
+  background-color: ;
+}
+
+.bill-60 {
+  background-color: #f49ac2;
+}
+
+.bill-70 {
+  background-color: #ffb347;
+}
+
+.bill-80 {
+  background-color: #c23b22;
+}
+
+.bill-90 {
+  background-color: #fdfd96;
+}
