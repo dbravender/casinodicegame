@@ -31,10 +31,17 @@
       return {rolledDice: {}};
     },
     render: function () {
-      var components = [];
+      var players = [];
+      var casinos = [];
+      var actions = [];
+      for (var i=0; i<this.props.players.length; i++) {
+        console.log(this.props.players[i]);
+        players.push(<Player key={'player' + i}
+                             player={this.props.players[i]}/>);
+      }
       for (var number=1; number < 7; number++) {
         var diceToPlay = this.props.current_player ? this.props.current_player.rolled_dice[number] : {};
-        components.push(
+        casinos.push(
           <Casino key={number}
                   currentPlayer={this.props.current_player}
                   diceToPlay={diceToPlay}
@@ -43,7 +50,18 @@
                   bills={this.props.casino_bills[number]}
                   winners={this.props.winners_by_casino[number] || []}/>);
         }
-        return <div className="casinos">{components}</div>;
+        if (this.props.state == 'join') {
+          actions.push(<button className="action"
+                               onClick={start}>Start</button>);
+        } else if (this.props.state == 'gameover') {
+          actions.push(<button className="action"
+                               onClick={restart}>Reset</button>);
+        }
+        return <div className="game">
+                 <div className="players">{players}</div>
+                 {actions}
+                 {casinos}
+               </div>;
       }
     });
 
@@ -92,9 +110,20 @@
       }
     });
 
+    var Player = React.createClass({
+      render: function () {
+        return <div className={"player " + this.props.player.color}>
+                 <span className="score">{this.props.player.score}</span>
+                 <Die number={this.props.player.dice} color={this.props.player.color}/>
+                 <Die number={this.props.player.white_dice} color="white"/>
+               </div>;
+      }
+    });
+
     var gameView = React.render(
       <GameView casino_bills={casino_bills}
                 dice_per_casino={dice_per_casino}
+                players={[]}
                 current_player={current_player}
                 winners_by_casino={winners_by_casino}/>,
       document.getElementById('game')
@@ -109,7 +138,7 @@
 
     socket.on('update', function (message) {
       window.incoming = JSON.parse(message);
-      gameView.setProps(JSON.parse(message));
+      gameView.setProps(window.incoming);
     });
 
     socket.on('alert', function (message) {
@@ -118,6 +147,14 @@
 
     function play(casino) {
       socket.emit('play', casino);
+    }
+
+    function start() {
+      socket.emit('start', '');
+    }
+
+    function restart() {
+      socket.emit('restart', '');
     }
 
     window.socket = socket;

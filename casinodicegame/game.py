@@ -27,6 +27,12 @@ class Game(object):
         self.round = 0
         self.state = 'join'
 
+    def reset(self):
+        for player in self.players:
+            player.bills = []
+        self.round = 0
+        self.start_game()
+
     def serialize(self):
         state = deepcopy(self.__dict__)
         state['dice_per_casino'] = {c: self.dice_per_casino(c)

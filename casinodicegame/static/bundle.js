@@ -77,10 +77,17 @@
 	      return {rolledDice: {}};
 	    },
 	    render: function () {
-	      var components = [];
+	      var players = [];
+	      var casinos = [];
+	      var actions = [];
+	      for (var i=0; i<this.props.players.length; i++) {
+	        console.log(this.props.players[i]);
+	        players.push(React.createElement(Player, {key: 'player' + i, 
+	                             player: this.props.players[i]}));
+	      }
 	      for (var number=1; number < 7; number++) {
 	        var diceToPlay = this.props.current_player ? this.props.current_player.rolled_dice[number] : {};
-	        components.push(
+	        casinos.push(
 	          React.createElement(Casino, {key: number, 
 	                  currentPlayer: this.props.current_player, 
 	                  diceToPlay: diceToPlay, 
@@ -89,7 +96,18 @@
 	                  bills: this.props.casino_bills[number], 
 	                  winners: this.props.winners_by_casino[number] || []}));
 	        }
-	        return React.createElement("div", {className: "casinos"}, components);
+	        if (this.props.state == 'join') {
+	          actions.push(React.createElement("button", {className: "action", 
+	                               onClick: start}, "Start"));
+	        } else if (this.props.state == 'gameover') {
+	          actions.push(React.createElement("button", {className: "action", 
+	                               onClick: restart}, "Reset"));
+	        }
+	        return React.createElement("div", {className: "game"}, 
+	                 React.createElement("div", {className: "players"}, players), 
+	                 actions, 
+	                 casinos
+	               );
 	      }
 	    });
 
@@ -138,9 +156,20 @@
 	      }
 	    });
 
+	    var Player = React.createClass({displayName: "Player",
+	      render: function () {
+	        return React.createElement("div", {className: "player " + this.props.player.color}, 
+	                 React.createElement("span", {className: "score"}, this.props.player.score), 
+	                 React.createElement(Die, {number: this.props.player.dice, color: this.props.player.color}), 
+	                 React.createElement(Die, {number: this.props.player.white_dice, color: "white"})
+	               );
+	      }
+	    });
+
 	    var gameView = React.render(
 	      React.createElement(GameView, {casino_bills: casino_bills, 
 	                dice_per_casino: dice_per_casino, 
+	                players: [], 
 	                current_player: current_player, 
 	                winners_by_casino: winners_by_casino}),
 	      document.getElementById('game')
@@ -155,7 +184,7 @@
 
 	    socket.on('update', function (message) {
 	      window.incoming = JSON.parse(message);
-	      gameView.setProps(JSON.parse(message));
+	      gameView.setProps(window.incoming);
 	    });
 
 	    socket.on('alert', function (message) {
@@ -164,6 +193,14 @@
 
 	    function play(casino) {
 	      socket.emit('play', casino);
+	    }
+
+	    function start() {
+	      socket.emit('start', '');
+	    }
+
+	    function restart() {
+	      socket.emit('restart', '');
 	    }
 
 	    window.socket = socket;

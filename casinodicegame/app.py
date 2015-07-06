@@ -57,6 +57,14 @@ def play(action):
         emit('update', game.serialize(), room=room)
 
 
+@socketio.on('restart')
+def restart(message):
+    room = session['room']
+    game = games[room]
+    game.reset()
+    emit('update', game.serialize(), room=room)
+
+
 @app.before_request
 def get_or_set_user_id():
     user_id = session.get('user_id')
