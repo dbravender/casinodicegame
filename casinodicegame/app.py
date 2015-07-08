@@ -33,7 +33,7 @@ def start(message):
     room = session['room']
     game = games[room]
     game.start_game()
-    emit('update', game.serialize(), room=room)
+    update(game, room)
 
 
 @socketio.on('join')
@@ -44,7 +44,7 @@ def join(message):
     player_id = session['user_id']
     game = games[room]
     game.join(player_id)
-    emit('update', game.serialize(), room=room)
+    update(game, room)
 
 
 @socketio.on('play')
@@ -54,7 +54,7 @@ def play(action):
     if game.current_player.player_id != session['user_id']:
         return
     for _ in game.play(int(action)):
-        emit('update', game.serialize(), room=room)
+        update(game, room)
 
 
 @socketio.on('restart')
@@ -62,7 +62,7 @@ def restart(message):
     room = session['room']
     game = games[room]
     game.reset()
-    emit('update', game.serialize(), room=room)
+    update(game, room)
 
 
 @app.before_request
@@ -71,6 +71,11 @@ def get_or_set_user_id():
     if user_id is None:
         user_id = str(uuid.uuid1())
         session['user_id'] = user_id
+
+
+def update(game, room):
+    emit('update', game.serialize(), room=room)
+
 
 if __name__ == '__main__':
     socketio.run(app, use_reloader=False)
