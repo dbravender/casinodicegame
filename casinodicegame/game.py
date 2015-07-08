@@ -28,6 +28,8 @@ class Game(object):
         self.state = 'join'
 
     def reset(self):
+        self.bills = copy(bills)
+        random.shuffle(self.bills)
         for player in self.players:
             player.bills = []
         self.round = 0
