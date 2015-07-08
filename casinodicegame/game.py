@@ -38,6 +38,7 @@ class Game(object):
         state['dice_per_casino'] = {c: self.dice_per_casino(c)
                                     for c in range(1, 7)}
         state['winners_by_casino'] = self.winners_by_casino()
+        state['last_played_dice'] = self.last_played_dice()
         return json.dumps(
             state,
             default=lambda o: (hasattr(o, 'serialize') and o.serialize() or
@@ -59,6 +60,29 @@ class Game(object):
         self.state = 'play'
         self.starting_player = self.players[-1]
         self.start_round()
+
+    def last_played_dice(self):
+        if not self.current_player:
+            return {}
+        played = defaultdict(dict)
+        for casino in range(1, 7):
+            total_white_played = sum(
+                player.last_played_dice.get(casino, [0, 0])[1]
+                for player in self.players)
+            played[casino]['white'] = [None] * (
+                self.casino_dice.get(casino, {}).get('white', 0) -
+                total_white_played)
+            for player in one_cycle(self.players, self.current_player):
+                color_played, white_played = player.last_played_dice.get(
+                    casino, [0, 0])
+                played[casino]['white'].extend([player.color] * white_played)
+                played[casino][player.color] = (
+                    [None] * (self.casino_dice.get(casino, {})
+                                              .get(player.color, 0) -
+                              color_played))
+                played[casino][player.color].extend([player.color] *
+                                                    color_played)
+        return played
 
     def winners_by_casino(self):
         winners = {}
@@ -105,7 +129,7 @@ class Game(object):
         rolled_dice = self.current_player.rolled_dice[casino]
         self.casino_dice[casino][self.current_player.color] += rolled_dice[0]
         self.casino_dice[casino]['white'] += rolled_dice[1]
-        self.current_player.remove_used_dice(rolled_dice)
+        self.current_player.remove_used_dice(casino, rolled_dice)
         self.current_player.roll()
         next_players = filter(
             lambda p: p.remaining_dice() > 0,
@@ -131,6 +155,7 @@ class Player(object):
         self.game = game
         self.bills = []
         self.rolled_dice = {}
+        self.last_played_dice = {}
         self.player_id = player_id
         self.color = color
         self.dice = 0
@@ -168,7 +193,8 @@ class Player(object):
         for x in set(white_dice.keys() + my_dice.keys()):
             self.rolled_dice[x] = [my_dice.get(x, 0), white_dice.get(x, 0)]
 
-    def remove_used_dice(self, used_dice):
+    def remove_used_dice(self, casino, used_dice):
+        self.last_played_dice = {casino: used_dice}
         self.dice -= used_dice[0]
         self.white_dice -= used_dice[1]
 

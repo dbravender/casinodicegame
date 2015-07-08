@@ -47,7 +47,8 @@
                   number={number}
                   dice={this.props.dice_per_casino[number]}
                   bills={this.props.casino_bills[number]}
-                  winners={this.props.winners_by_casino[number] || []}/>);
+                  winners={this.props.winners_by_casino[number] || []}
+                  playedDice={this.props.last_played_dice[number] || {}}/>);
         }
         if (this.props.state == 'join') {
           actions.push(<button className="action"
@@ -79,7 +80,10 @@
         });
         for (i=0; i < this.props.dice.length; i++) {
           var die = this.props.dice[i];
-          components.push(<Die key={i + 'die'} color={die[0]} number={die[1]}/>);
+          components.push(<Die key={i + 'die'}
+                               color={die[0]}
+                               number={die[1]}
+                               playedDice={this.props.playedDice[die[0]]}/>);
         }
         if (this.props.diceToPlay &&
             (this.props.diceToPlay[0] || this.props.diceToPlay[1])) {
@@ -101,8 +105,11 @@
       render: function () {
         var components = [];
         for (var i=0; i < this.props.number; i++) {
+          var lastPlayedBy =  this.props.playedDice ? this.props.playedDice[i] : '';
           components.push(<div key={'die' + i}
-                               className={"die " + this.props.color}>
+                               className={'die ' + this.props.color +
+                                          (lastPlayedBy ? ' last-played ' : '') +
+                                          ' last-played-' + lastPlayedBy}>
                           </div>);
         }
         return <div className="dice-group">{components}</div>;
@@ -124,7 +131,8 @@
                 dice_per_casino={dice_per_casino}
                 players={[]}
                 current_player={current_player}
-                winners_by_casino={winners_by_casino}/>,
+                winners_by_casino={winners_by_casino}
+                last_played_dice={{}}/>,
       document.getElementById('game')
     );
 

@@ -25,6 +25,8 @@
 }
 
 .die {
+  text-align: center;
+  vertical-align: center;
   border: 1px solid black;
   border-radius: 5px;
   color: white;
@@ -76,8 +78,43 @@
 
 .white {
   background-color: white;
-  color: black;
 }
+
+.last-played {
+  box-shadow: none;
+  -webkit-animation:spin 4s linear infinite;
+  -moz-animation:spin 4s linear infinite;
+  animation:spin 4s linear infinite;
+}
+
+.white.last-played-black {
+  border-color: #000000;
+  color: #000000;
+}
+
+.white.last-played-green {
+  border-color: #0e7744;
+  color: #0e7744;
+}
+
+.white.last-played-blue {
+  border-color: #104990;
+  color: #104990;
+}
+
+.white.last-played-red {
+  border-color: #af1306;
+  color: #af1306;
+}
+
+/*.white.last-played-white {
+  border-color: white;
+  color: black;
+}*/
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 .to-play {
   height: 3em;

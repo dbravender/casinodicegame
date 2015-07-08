@@ -59,7 +59,7 @@ class TestPlayer(TestCase):
         player1 = game.join('player1')
         player1.white_dice = 2
         player1.dice = 4
-        player1.remove_used_dice([2, 1])
+        player1.remove_used_dice(1, [2, 1])
         self.assertEqual(player1.white_dice, 1)
         self.assertEqual(player1.dice, 2)
 
@@ -165,6 +165,29 @@ class TestGame(TestCase):
         self.assertEqual(game.round, 2)
         self.assertEqual(game.current_player, player2)
         self.assertEqual(player1.bills, [90])
+        self.assertEqual(player1.last_played_dice, {1: [2, 1]})
+
+    def test_last_played_dice(self):
+        game = Game()
+        player1 = game.join('player1')
+        player2 = game.join('player2')
+        player1.last_played_dice = {1: [2, 1]}
+        player2.last_played_dice = {1: [3, 1]}
+        game.start_game()
+        game.current_player = player2
+        game.casino_dice = {1: {player1.color: 3, player2.color: 3,
+                                'white': 2}}
+        self.assertEqual(
+            game.last_played_dice()[1],
+            {player1.color: [None, player1.color, player1.color],
+             player2.color: [player2.color] * 3,
+             'white': [player1.color, player2.color]})
+        game.casino_dice[1]['white'] = 3
+        self.assertEqual(
+            game.last_played_dice()[1],
+            {player1.color: [None, player1.color, player1.color],
+             player2.color: [player2.color] * 3,
+             'white': [None, player1.color, player2.color]})
 
 
 class TestUtil(TestCase):
