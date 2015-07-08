@@ -35,7 +35,6 @@
       var casinos = [];
       var actions = [];
       for (var i=0; i<this.props.players.length; i++) {
-        console.log(this.props.players[i]);
         players.push(<Player key={'player' + i}
                              player={this.props.players[i]}/>);
       }

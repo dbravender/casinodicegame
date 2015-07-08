@@ -153,6 +153,8 @@ class Player(object):
         self.dice = 8
         if len(self.game.players) == 2:
             self.white_dice = 4
+        elif len(self.game.players) == 5:
+            self.white_dice = 0
         else:
             self.white_dice = 2
         self.roll()

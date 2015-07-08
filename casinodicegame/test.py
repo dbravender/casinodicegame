@@ -43,6 +43,11 @@ class TestPlayer(TestCase):
         self.assertEqual(2, player1.white_dice)
         self.assertEqual(8, player1.dice)
 
+        game.join('player4')
+        game.join('player5')
+        player1.start_round()
+        self.assertEqual(0, player1.white_dice)
+
     def test_score(self):
         game = Game()
         player1 = game.join('player1')
