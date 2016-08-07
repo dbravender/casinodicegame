@@ -36,7 +36,8 @@
       var actions = [];
       for (var i=0; i<this.props.players.length; i++) {
         players.push(<Player key={'player' + i}
-                             player={this.props.players[i]}/>);
+                             player={this.props.players[i]}
+                             currentPlayer={this.props.current_player}/>);
       }
       for (var number=1; number < 7; number++) {
         var diceToPlay = this.props.current_player ? this.props.current_player.rolled_dice[number] : {};
@@ -118,7 +119,7 @@
 
     var Player = React.createClass({
       render: function () {
-        return <div className={"player " + this.props.player.color}>
+        return <div className={"player " + this.props.player.color + " " + (this.props.currentPlayer ? (this.props.player.color == this.props.currentPlayer.color ? "current-player" : "") : "")}>
                  <span className="score">{this.props.player.score}</span>
                  <Die number={this.props.player.dice} color={this.props.player.color}/>
                  <Die number={this.props.player.white_dice} color="white"/>
