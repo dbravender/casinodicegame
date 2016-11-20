@@ -138,8 +138,6 @@
       window.incoming = JSON.parse(message);
       if (window.incoming.current_player && userId == window.incoming.current_player.player_id) {
         if (diceRollMP3) {
-          diceRollMP3.pause();
-          diceRollMP3.currentTime = 0;
           diceRollMP3.play();
         }
         document.body.style.backgroundColor = 'lightblue';
@@ -157,12 +155,22 @@
       alert(message);
     });
 
+    function readySound() {
+      if (!diceRollMP3) diceRollMP3 = new Audio('/static/dice.mp3');
+      else {
+          diceRollMP3.currentTime = 0;
+      }
+      diceRollMP3.play();
+      diceRollMP3.pause();
+    }
+
     function play(casino) {
+      readySound();
       socket.emit('play', casino);
     }
 
     function start() {
-      diceRollMP3 = new Audio('/static/dice.mp3');
+      readySound();
       socket.emit('start', '');
     }
 
