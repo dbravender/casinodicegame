@@ -10,7 +10,7 @@
   var winners_by_casino = {};
   var current_player = {color: 'blue', rolled_dice: {}};
   var userId = null;
-  var diceRollMP3 = new Audio('/static/dice.mp3');
+  var diceRollMP3 = null;
 
   var GameView = React.createClass({
     getInitialState: function() {
@@ -137,7 +137,11 @@
     socket.on('update', function (message) {
       window.incoming = JSON.parse(message);
       if (window.incoming.current_player && userId == window.incoming.current_player.player_id) {
-        diceRollMP3.play();
+        if (diceRollMP3) {
+          diceRollMP3.pause();
+          diceRollMP3.currentTime = 0;
+          diceRollMP3.play();
+        }
         document.body.style.backgroundColor = 'lightblue';
       } else {
         document.body.style.backgroundColor = 'white';
@@ -158,6 +162,7 @@
     }
 
     function start() {
+      diceRollMP3 = new Audio('/static/dice.mp3');
       socket.emit('start', '');
     }
 
