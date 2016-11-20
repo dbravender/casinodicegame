@@ -4,6 +4,7 @@ from functools import partial
 import json
 import random
 from operator import itemgetter
+from random import choice
 
 import gevent
 
@@ -109,6 +110,9 @@ class Game(object):
                 self.player_by_color[color].bills.append(bill)
 
     def start_round(self):
+        if self.round == 0:
+            # randomly select a starting player
+            self.starting_player = choice(self.players)
         self.round += 1
         if self.round > 4:
             self.state = 'gameover'
