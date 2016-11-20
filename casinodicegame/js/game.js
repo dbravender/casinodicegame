@@ -3,63 +3,49 @@
   'use strict';
 
   var React = require('react');
+  var ReactDOM = require('react-dom');
   window.React = React;
-
-  var casino_bills = {
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: []
-  };
-
-  var dice_per_casino = {
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: []
-  };
+  window.ReactDOM = ReactDOM;
 
   var winners_by_casino = {};
   var current_player = {color: 'blue', rolled_dice: {}};
 
   var GameView = React.createClass({
     getInitialState: function() {
-      return {rolledDice: {}};
+      return {rolledDice: {}, players: [], 'dice_per_casino': [],
+              'casino_bills': [], 'winners_by_casino': [],
+              'last_played_dice': []};
     },
     render: function () {
       var players = [];
       var casinos = [];
       var actions = [];
-      for (var i=0; i<this.props.players.length; i++) {
+      for (var i=0; i<this.state.players.length; i++) {
         players.push(<Player key={'player' + i}
-                             player={this.props.players[i]}
-                             currentPlayer={this.props.current_player}/>);
+                             player={this.state.players[i]}
+                             currentPlayer={this.state.current_player}/>);
       }
       for (var number=1; number < 7; number++) {
-        var diceToPlay = this.props.current_player ? this.props.current_player.rolled_dice[number] : {};
+        var diceToPlay = this.state.current_player ? this.state.current_player.rolled_dice[number] : {};
         casinos.push(
           <Casino key={number}
-                  currentPlayer={this.props.current_player}
+                  currentPlayer={this.state.current_player}
                   diceToPlay={diceToPlay}
                   number={number}
-                  dice={this.props.dice_per_casino[number]}
-                  bills={this.props.casino_bills[number]}
-                  winners={this.props.winners_by_casino[number] || []}
-                  playedDice={this.props.last_played_dice[number] || {}}/>);
+                  dice={this.state.dice_per_casino[number]}
+                  bills={this.state.casino_bills[number]}
+                  winners={this.state.winners_by_casino[number] || []}
+                  playedDice={this.state.last_played_dice[number] || {}}/>);
         }
-        if (this.props.state == 'join') {
-          actions.push(<button className="action"
+        if (this.state.state == 'join') {
+          actions.push(<button key='join' className="action"
                                onClick={start}>Start</button>);
-        } else if (this.props.state == 'gameover') {
-          actions.push(<button className="action"
+        } else if (this.state.state == 'gameover') {
+          actions.push(<button key='gameover' className="action"
                                onClick={restart}>Reset</button>);
         }
         return <div className="game">
-                 <div className="players">{players}</div>
+                 <div className="players" key='players'>{players}</div>
                  {actions}
                  {casinos}
                </div>;
@@ -80,19 +66,19 @@
                  </div>;
         });
         for (i=0; i < this.props.dice.length; i++) {
-          var die = this.props.dice[i];
-          components.push(<Die key={i + 'die'}
-                               color={die[0]}
-                               number={die[1]}
-                               playedDice={this.props.playedDice[die[0]]}/>);
+          var dice = this.props.dice[i];
+          components.push(<Dice key={i + 'die'}
+                               color={dice[0]}
+                               number={dice[1]}
+                               playedDice={this.props.playedDice[dice[0]]}/>);
         }
         if (this.props.diceToPlay &&
             (this.props.diceToPlay[0] || this.props.diceToPlay[1])) {
           toPlay = <div className="to-play">
                      <button onClick={play.bind(this, this.props.number)}>
-                       <Die color={this.props.currentPlayer.color}
+                       <Dice color={this.props.currentPlayer.color}
                             number={this.props.diceToPlay[0]}/>
-                       <Die color="white" number={this.props.diceToPlay[1]}/>
+                       <Dice color="white" number={this.props.diceToPlay[1]}/>
                      </button>
                    </div>;
         } else {
@@ -103,15 +89,22 @@
     });
 
     var Die = React.createClass({
+      defaultProps: {
+        lastPlayedBy: '',
+      },
+      render: function () {
+        return <div className={'die ' + this.props.color +
+                               (this.props.lastPlayedBy ? ' last-played ' : '') +
+                                ' last-played-' + this.props.lastPlayedBy}></div>;
+      }
+    });
+
+    var Dice = React.createClass({
       render: function () {
         var components = [];
         for (var i=0; i < this.props.number; i++) {
           var lastPlayedBy =  this.props.playedDice ? this.props.playedDice[i] : '';
-          components.push(<div key={'die' + i}
-                               className={'die ' + this.props.color +
-                                          (lastPlayedBy ? ' last-played ' : '') +
-                                          ' last-played-' + lastPlayedBy}>
-                          </div>);
+          components.push(<Die key={'die' + i} color={this.props.color} lastPlayedBy={lastPlayedBy}/>);
         }
         return <div className="dice-group">{components}</div>;
       }
@@ -121,19 +114,14 @@
       render: function () {
         return <div className={"player " + this.props.player.color + " " + (this.props.currentPlayer ? (this.props.player.color == this.props.currentPlayer.color ? "current-player" : "") : "")}>
                  <span className="score">{this.props.player.score}</span>
-                 <Die number={this.props.player.dice} color={this.props.player.color}/>
-                 <Die number={this.props.player.white_dice} color="white"/>
+                 <Die color={this.props.player.color}/> {this.props.player.dice}<br/>
+                 <Die color="white"/> {this.props.player.white_dice}
                </div>;
       }
     });
 
-    var gameView = React.render(
-      <GameView casino_bills={casino_bills}
-                dice_per_casino={dice_per_casino}
-                players={[]}
-                current_player={current_player}
-                winners_by_casino={winners_by_casino}
-                last_played_dice={{}}/>,
+    var gameView = ReactDOM.render(
+      <GameView/>,
       document.getElementById('game')
     );
 
@@ -146,7 +134,8 @@
 
     socket.on('update', function (message) {
       window.incoming = JSON.parse(message);
-      gameView.setProps(window.incoming);
+      console.log(window.incoming);
+      gameView.setState(window.incoming);
     });
 
     socket.on('alert', function (message) {
