@@ -1,7 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 
-from flask import Flask, redirect, url_for, session
+from flask import Flask, redirect, request, url_for, session
 from flask.ext.socketio import SocketIO, emit, join_room
 from casinodicegame.game import Game
 import uuid
@@ -45,6 +45,7 @@ def join(message):
     game = games[room]
     game.join(player_id)
     update(game, room)
+    request.namespace.emit('userId', session['user_id'])
 
 
 @socketio.on('play')

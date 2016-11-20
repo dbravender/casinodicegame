@@ -9,6 +9,8 @@
 
   var winners_by_casino = {};
   var current_player = {color: 'blue', rolled_dice: {}};
+  var userId = null;
+  var diceRollMP3 = new Audio('/static/dice.mp3');
 
   var GameView = React.createClass({
     getInitialState: function() {
@@ -134,8 +136,17 @@
 
     socket.on('update', function (message) {
       window.incoming = JSON.parse(message);
-      console.log(window.incoming);
+      if (window.incoming.current_player && userId == window.incoming.current_player.player_id) {
+        diceRollMP3.play();
+        document.body.style.backgroundColor = 'lightblue';
+      } else {
+        document.body.style.backgroundColor = 'white';
+      }
       gameView.setState(window.incoming);
+    });
+
+    socket.on('userId', function (newUserId) {
+      userId = newUserId;
     });
 
     socket.on('alert', function (message) {

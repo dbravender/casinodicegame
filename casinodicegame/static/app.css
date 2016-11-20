@@ -17,9 +17,9 @@
 }
 
 .score {
-  background-color: white;
+  background-color: none;
+  margin-left: 10px;
   margin-right: 10px;
-  color: black;
   font-size: 200%;
   float: left;
   height: 2em;
