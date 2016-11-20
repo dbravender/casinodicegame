@@ -88,7 +88,7 @@ class TestGame(TestCase):
         game.serialize()
 
     def test_round_start(self):
-        game = Game()
+        game = Game(choice=lambda players: players[-1])
         player1 = game.join('player1')
         player2 = game.join('player2')
         game.start_game()
@@ -140,7 +140,7 @@ class TestGame(TestCase):
         self.assertEqual(player2.bills, [90, 70])
 
     def test_play(self):
-        game = Game()
+        game = Game(choice=lambda players: players[-1])
         player1 = game.join('player1')
         player2 = game.join('player2')
         game.start_game()

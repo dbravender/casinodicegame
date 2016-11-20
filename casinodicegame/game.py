@@ -16,7 +16,7 @@ bills = ([60] * 5 + [70] * 5 + [80] * 5 + [90] * 5 + [10] * 6 + [40] * 6 +
 
 
 class Game(object):
-    def __init__(self):
+    def __init__(self, choice=choice):
         self.bills = copy(bills)
         random.shuffle(self.bills)
         self.players = []
@@ -27,6 +27,7 @@ class Game(object):
         self.casino_dice = {}
         self.round = 0
         self.state = 'join'
+        self.choice = choice
 
     def reset(self):
         self.bills = copy(bills)
@@ -112,7 +113,7 @@ class Game(object):
     def start_round(self):
         if self.round == 0:
             # randomly select a starting player
-            self.starting_player = choice(self.players)
+            self.starting_player = self.choice(self.players)
         self.round += 1
         if self.round > 4:
             self.state = 'gameover'
